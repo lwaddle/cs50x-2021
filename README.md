@@ -1,5 +1,7 @@
 # CS50x 2021
 
-All labs and problems sets for Harvard's CS50x course.
+All labs and problems sets for Harvard's 2021 CS50x course.
 
-Please consider the academic honesty policy before using my source code to complete your own labs and problem sets. Thanks!
+Please feel free to make a pull request if you would like to improve on my work. I'm stil new to this programming stuff, so consider that before copying any of my code for your homework. Thanks for stopping by.
+
+-Loren
