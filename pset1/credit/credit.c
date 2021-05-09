@@ -1,83 +1,54 @@
-#include <cs50.h>
 #include <stdio.h>
 
-/**
- * Function: is_valid_cc_number
- * Returns 1 if card number is valid, 2 if invalid
- */
-int is_valid_cc_number(long long card_number);
+unsigned int* digitize(long long number, unsigned int length);
+unsigned int number_length(long long number);
 
-/**
- * Function: number_length
- * Returns the length of a number
- */
-int number_length(long long number);
-
-int main(void)
+int main(int argc, char *argv[])
 {
-    // Define min and max credit card values
-    long long cc_min = 1000000000000;
-    long long cc_max = 9999999999999999;
-
-    // Get credit card number from user
-    long long credit_card_number;
-    do
-    {
-        credit_card_number = get_long_long("Number: ");
-    }
-    while ((credit_card_number < cc_min) || (credit_card_number > cc_max));
-    
-    // Test function
-    int n = is_valid_cc_number(credit_card_number);
-
+    digitize(12345, 5);
     return 0;
 }
 
-int is_valid_cc_number(long long card_number)
-{   
-    // Put the card number into an array so each digit
-    // can be accessed easily
-    int length = number_length(card_number);
-    int digits[length];
-    long long card_number_copy = card_number;
 
-    for (int i = length - 1; i >= 0; i--)
+unsigned int* digitize(long long number, unsigned int length)
+{
+    unsigned int digits[length];
+
+    for (unsigned int i = length - 1; i >= 0; i--)
     {
-        digits[i] = card_number_copy % 10;
-        card_number_copy = (long long)card_number_copy / 10;
+        printf("%i\n", i);
     }
 
-    // Split the digits into 2 sets as required by Luhn’s Algorithm
-    // The first set is the digits that will be multiplied by 2
-    // The second set is the remaining digits
-    
-    // First set:
-    int set1[10];                      // Buffer of 10, will not always be full
-    card_number_copy = card_number;    // Reset card_number_copy
-    
-
-
-
-
-
-
-
-
-    
-
-    return 0;    // TODO: Return the actual value
+    return 0;    // TODO: Finish later
 }
 
-int number_length(long long number)
+/**
+ * Function: number_length
+ * Takes a number and returns its length. For example:
+ * 12,345 would return a length of 5
+ * 
+ * Arguments:
+ * long long number
+ * 
+ * Returns unsigned int
+ */
+unsigned int number_length(long long number)
 {
-    int digit_count = 1;
     long long number_copy = number;
-
-    while ((long long)number_copy / 10 > 0)
+    
+    // Handle negative number
+    if (number_copy < 0)
     {
-        number_copy = (long long)number_copy / 10;
-        digit_count++;
+        number_copy *= -1;
     }
 
-    return digit_count;
+    unsigned int number_length = 0;
+
+    while (number_copy > 0)
+    {
+        number_copy = (long long)number_copy / 10;
+        number_length++;
+    }
+
+    return number_length;
 }
