@@ -1,18 +1,17 @@
 #include <cs50.h>
 #include <stdio.h>
-#include <stdlib.h>
 
-void drop_last_digit(long long *n);
+void           drop_last_digit(long long *n);
 unsigned short first_digit(long long n);
 unsigned short first_two_digits(long long n);
-long long get_card_number(void);
-short is_valid_cc_number(long long n);
+long long      get_card_number(void);
+short          is_valid_cc_number(long long n);
 unsigned short last_digit(long long n);
 unsigned short number_length(long long n);
-short prefix_is_amex(long long n);
-short prefix_is_mastercard(long long n);
-short prefix_is_visa(long long n);
-void print_card_type(long long n);
+short          prefix_is_amex(long long n);
+short          prefix_is_mastercard(long long n);
+short          prefix_is_visa(long long n);
+void           print_card_type(long long n);
 unsigned short sum_of_digits(long long n);
 
 int main(int argc, char *argv[])
@@ -57,12 +56,12 @@ unsigned short first_digit(long long n)
     // Handle single digit input
     if (number_length(n) == 1)
     {
-        return (unsigned short)n;
+        return (long long)n;
     }
 
     n = first_two_digits(n);
 
-    return (unsigned short)n / 10;
+    return (long long)n / 10;
 }
 
 /**
@@ -329,17 +328,23 @@ void print_card_type(long long n)
         if (prefix_is_amex(n))
         {
             printf("%s", amex);
+            return;
         }
 
         if (prefix_is_mastercard(n))
         {
             printf("%s", mastercard);
+            return;
         }
 
         if (prefix_is_visa(n))
         {
             printf("%s", visa);
+            return;
         }
+
+        printf("INVALID\n");
+        return;
     }
     else
     {

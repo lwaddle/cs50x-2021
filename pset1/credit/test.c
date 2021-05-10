@@ -4,14 +4,7 @@
 
 int main(void)
 {
-    char buffer[256];
-
-    printf("size of buffer: %lu\n", sizeof(buffer));
-
-    char *test = "dfasdfasdf";
-
-    printf("%s\n", test);
-
-
+    int long long n = 4062901840;
+    printf("%lli\n", n % 10);
 
 }
