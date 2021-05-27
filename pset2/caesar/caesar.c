@@ -4,97 +4,110 @@
 #include <stdlib.h>
 #include <string.h>
 
-void encrypt(char *plaintext);
-int  get_index(int c, const char array[], int length);
-int  get_valid_key(const int argc, const char *argv[]);
-void print_cipher_output(char *cipher);
-int  shift_cipher(char cipher[], int key);
+void encipher(char *plaintext, int key);
+int  get_alphabetical_index(char c);
+int  get_valid_key(int argc, char *argv[]);
 
-const char ALPHABET_LOWER[] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
-                               'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
-                               's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
-
-const char ALPHABET_UPPER[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
-                               'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
-                               'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-
-char cipher_lower[] =         {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
-                               'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
-                               's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
-
-char cipher_upper[] =         {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
-                               'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
-                               'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-
-int main(const int argc, const char *argv[])
+int main(int argc, char *argv[])
 {
-    // Get the key from CL arg
+    // Get key
     int key = get_valid_key(argc, argv);
+    if (key == -1)    // Invalid CL arg
+    {
+        return 1;
+    }
 
-    // Populate the cipher text (lower and upper)
-    shift_cipher(cipher_lower, key);
-    shift_cipher(cipher_upper, key);
-
-    // Get the plaintext
+    // Get plaintext
     char *plaintext = get_string("plaintext: ");
 
-    // Encrypt the plaintext
-    encrypt(plaintext);
+    // Encipher and print output
+    encipher(plaintext, key);
 
-    // Print the cyphertext
-    print_cipher_output(plaintext);
+    return 0;
 }
 
-
 /**
- * Encrypts the plaintext into a ciphertext by shifting the letters by 'key'
- * positions.
+ * This function enciphers (encrypts?) plaintext by offsetting the plaintext
+ * by 'key' positions. For example: plaintext 'ABC' with a key of 1 would
+ * equal 'BCD'. 'Z' with a key of 2 would equal 'B'. If the key ofsets the
+ * character over the boundaries of the English alphabet, they overflow back
+ * to the 0 index. The function also prints the output.
  */
-void encrypt(char *plaintext)
+void encipher(char *plaintext, int key)
 {
-    for (int i = 0, length = strlen(plaintext); i < length; i++)
+    /**
+     * The algorithm (i.e., cipher) encrypts messages by “rotating” each
+     * letter by k positions. More formally, if p is some plaintext
+     * (i.e., an unencrypted message), p sub i is the ith character in p, and
+     * k is a secret key (i.e., a non-negative integer), then each letter,
+     * c sub i, in the ciphertext, c, is computed as:
+     * 
+     * c sub i = (p sub i + k) % 26
+     */
+
+    const char ALPHABET[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
+                             'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+                             'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+    
+    int plaintext_length = strlen(plaintext);
+
+    printf("ciphertext: ");
+
+    for (int i = 0; i < plaintext_length; i++)
     {
-        int index;
         if (isalpha(plaintext[i]))
         {
-            // Get the char's index from the normal alphabet
-            // Upper or lower doesn't matter so use lower here.
-            index = get_index(tolower(plaintext[i]), ALPHABET_LOWER, 26);
-
-            // Replace the char with the appropriate cipher value using the
-            // index from the normal alphabet. Consider case.
-            if (isupper(plaintext[i]))
+            // Handle upper/lower case events
+            if (isupper(plaintext[i]))    // Uppercase detected
             {
-                plaintext[i] = cipher_upper[index];
-                //printf("%c", plaintext[i]);
+                int alphabetical_index = get_alphabetical_index(plaintext[i]);
+                int cipher_index = (get_alphabetical_index(plaintext[i]) + key) % 26;
+                printf("%c", ALPHABET[cipher_index]);
             }
-            else
+            else                          // Lowercase detected
             {
-                // It's lowercase
-                plaintext[i] = cipher_lower[index];
-                //printf("%c", plaintext[i]);
+                int alphabetical_index = get_alphabetical_index(plaintext[i]);
+                int cipher_index = (get_alphabetical_index(plaintext[i]) + key) % 26;
+                printf("%c", tolower(ALPHABET[cipher_index]));
             }
         }
+        else                              // Not alpha
+        {
+            printf("%c", plaintext[i]);
+        }
     }
+    printf("\n");
 
     return;
 }
 
 /**
- * Returns the index of a char from an alphabet char array. For example:
- * char 'c' is located at index 2 of the alphabet. Returns -1 if an
- * error has occurred.
+ * Returns the alphabetical index of a character. For example: 'A' is index
+ * 0, 'B' is index 1, and 'Z' is index 25. If the function is supplied
+ * anything other than an English alphabet character, it will return an error
+ * code of -1.
  */
-int get_index(int c, const char array[], int length)
+int get_alphabetical_index(char c)
 {
-    int index = -1;
+    const char ALPHABET[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
+                             'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+                             'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
     
-    for (int i = 0; i < length; i++)
+    int index = -1;
+
+    for (int i = 0; i < 26; i++)
     {
-        if (c == array[i])
+        if (toupper(c) == ALPHABET[i])
         {
             index = i;
         }
+    }
+
+    // Error handling
+    if (index == -1)
+    {
+        fprintf(stderr, "Error -1. Index out of English alphabet range.\n");
+        return index;
     }
 
     return index;
@@ -105,7 +118,7 @@ int get_index(int c, const char array[], int length)
  * the argument is invalid, it will display a message providing instructions.
  * An invalid argument will return a value of -1.
  */
-int get_valid_key(const int argc, const char *argv[])
+int get_valid_key(int argc, char *argv[])
 {
     // Standard error message
     char *error_message = "Usage: ./caesar key";
@@ -155,42 +168,5 @@ int get_valid_key(const int argc, const char *argv[])
         printf("%s\n", error_message);
         return -1;    // This is an error code
     }
-}
-
-/**
- * Prints the final ciphertext output to the console.
- */
-void print_cipher_output(char *cipher)
-{
-    printf("ciphertext: ");
-    for (int i = 0, length = strlen(cipher); i < length; i++)
-    {
-        printf("%c", cipher[i]);
-    }
-    printf("\n");
-}
-
-/**
- * Shifts an alphabet 'key' number of positions to the right. The last char
- * gets moved to the beginning at each pass.
- */
-int shift_cipher(char cipher[], int key)
-{
-    int length = strlen(cipher);
-
-    // Shift characters to the right. Last char becomes first. Do this key
-    // number of times.
-    while (key > 0)
-    {
-        char last_char = cipher[length - 1];
-        for (int i = length - 1; i > 0; i--)
-        {
-            cipher[i] = cipher[i - 1];
-        }
-        cipher[0] = last_char;
-        key--;
-    }
-
-    return 1;
 }
 
