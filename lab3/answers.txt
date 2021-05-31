@@ -1,0 +1,13 @@
+sort1 uses: Bubble Sort
+
+How do you know?: Best case runtime is very short - on the order of n. Worst
+case runtime is slow - on the order of n^2.
+
+sort2 uses: Merge Sort
+
+How do you know?: It has the lowest runtime on best and worst case scenarios.
+
+sort3 uses: Selection Sort
+
+How do you know?: Its best and worst case scenarios are just about equal in
+runtime.
